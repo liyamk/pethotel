@@ -12,5 +12,7 @@ namespace PetHotel.Models
         public DbSet<Pet> Pets { get; set; }
 
         public DbSet<Reservation> Reservations { get; set; }
+
+        public DbSet<User> Users { get; set; }
     }
 }

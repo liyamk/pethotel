@@ -75,6 +75,27 @@ namespace PetHotel.Migrations
                     b.ToTable("Reservations");
                 });
 
+            modelBuilder.Entity("PetHotel.Models.User", b =>
+                {
+                    b.Property<string>("UserName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("integer");
+
+                    b.HasKey("UserName");
+
+                    b.ToTable("Users");
+                });
+
             modelBuilder.Entity("PetHotel.Models.Reservation", b =>
                 {
                     b.HasOne("PetHotel.Models.Pet", "Pet")

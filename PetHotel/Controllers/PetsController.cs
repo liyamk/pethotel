@@ -1,16 +1,16 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using PetHotel.IServices;
 using PetHotel.Models;
 using PetHotel.Models.Dto;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace PetHotel.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PetsController : ControllerBase
     {
         private readonly IRepository<Pet> _petRepo;
@@ -22,6 +22,7 @@ namespace PetHotel.Controllers
             _mapper = mapper;
         }
 
+        // [Authorize(Roles = "AppUser")]
 
         // GET: api/<PetsController>
         [HttpGet]

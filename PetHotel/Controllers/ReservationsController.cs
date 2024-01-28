@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using PetHotel.IServices;
 using PetHotel.Models;
 using PetHotel.Models.Dto;
@@ -9,6 +9,7 @@ namespace PetHotel.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ReservationsController : ControllerBase
     {
         private readonly IRepository<Reservation> _reservationRepo;

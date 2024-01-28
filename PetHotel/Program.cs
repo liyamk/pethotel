@@ -1,8 +1,11 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using PetHotel;
 using PetHotel.IServices;
 using PetHotel.Models;
 using PetHotel.Services;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +26,24 @@ builder.Services.AddDbContext<PetHotelDbContext>(options =>
 
 builder.Services.AddScoped<IRepository<Pet>, Repository<Pet>>();
 builder.Services.AddScoped<IRepository<Reservation>, Repository<Reservation>>();
+builder.Services.AddScoped<IRepository<User>, Repository<User>>();
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Issuer"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        };
+    });
+
+// builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -35,6 +56,7 @@ if (app.Environment.IsDevelopment())
 
 // app.UseHttpsRedirection();
 
+app.UseAuthorization();
 app.UseAuthorization();
 
 app.MapControllers();
