@@ -22,8 +22,6 @@ namespace PetHotel.Controllers
             _mapper = mapper;
         }
 
-        // [Authorize(Roles = "AppUser")]
-
         // GET: api/<PetsController>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -59,6 +57,7 @@ namespace PetHotel.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
         public async Task<ActionResult<int>> CreateAsync([FromBody] PetCreateDto petDTO)
         {
             if (petDTO == null)
@@ -73,6 +72,7 @@ namespace PetHotel.Controllers
 
         // PUT api/<PetsController>/5
         [HttpPut("{id}")]
+        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
         public async Task<ActionResult> PutAsync(int id, [FromBody] PetDTO updateDto)
         {
             if (id == 0 && id != updateDto.Id)
@@ -96,6 +96,7 @@ namespace PetHotel.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
         public async Task<ActionResult> DeleteAsync(int id)
         {
             if (id == 0)
