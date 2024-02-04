@@ -12,7 +12,7 @@ using PetHotel.Models;
 namespace PetHotel.Migrations
 {
     [DbContext(typeof(PetHotelDbContext))]
-    [Migration("20240117011133_InitialCreate")]
+    [Migration("20240128214515_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -76,6 +76,27 @@ namespace PetHotel.Migrations
                     b.HasIndex("PetId");
 
                     b.ToTable("Reservations");
+                });
+
+            modelBuilder.Entity("PetHotel.Models.User", b =>
+                {
+                    b.Property<string>("UserName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("integer");
+
+                    b.HasKey("UserName");
+
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("PetHotel.Models.Reservation", b =>

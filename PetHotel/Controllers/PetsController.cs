@@ -1,16 +1,16 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using PetHotel.IServices;
 using PetHotel.Models;
 using PetHotel.Models.Dto;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace PetHotel.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PetsController : ControllerBase
     {
         private readonly IRepository<Pet> _petRepo;
@@ -21,7 +21,6 @@ namespace PetHotel.Controllers
             _petRepo = petRepo;
             _mapper = mapper;
         }
-
 
         // GET: api/<PetsController>
         [HttpGet]
@@ -58,6 +57,7 @@ namespace PetHotel.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
         public async Task<ActionResult<int>> CreateAsync([FromBody] PetCreateDto petDTO)
         {
             if (petDTO == null)
@@ -72,6 +72,7 @@ namespace PetHotel.Controllers
 
         // PUT api/<PetsController>/5
         [HttpPut("{id}")]
+        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
         public async Task<ActionResult> PutAsync(int id, [FromBody] PetDTO updateDto)
         {
             if (id == 0 && id != updateDto.Id)
@@ -95,6 +96,7 @@ namespace PetHotel.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
         public async Task<ActionResult> DeleteAsync(int id)
         {
             if (id == 0)

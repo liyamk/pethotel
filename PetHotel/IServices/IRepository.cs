@@ -8,11 +8,11 @@ namespace PetHotel.IServices
 
         Task<T?> GetAsync(Expression<Func<T, bool>> filter);
 
-        Task CreateAsync(T pet);
+        Task CreateAsync(T entity);
 
-        Task UpdateAsync(T pet);
+        Task UpdateAsync(T entity);
 
-        Task DeleteAsync(T pet);
+        Task DeleteAsync(T entity);
 
         Task SaveAsync();
     }
