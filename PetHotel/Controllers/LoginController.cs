@@ -46,16 +46,16 @@ namespace PetHotel.Controllers
         {
             var issuer = _config["Jwt:Issuer"];
             var audience = _config["Jwt:Audience"];
-            var key = Encoding.ASCII.GetBytes(_config["Jwt:Key"]);
+            var key = Encoding.UTF8.GetBytes(_config["Jwt:Key"]);
             var authClaims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()),
                 new Claim(ClaimTypes.Role, user.Role.ToString())
             };
 
             var expiration = DateTime.UtcNow.AddMinutes(expirationMinutes);
+
             var signingKey = new SigningCredentials(
                     new SymmetricSecurityKey(key),
                     SecurityAlgorithms.HmacSha256
@@ -65,6 +65,7 @@ namespace PetHotel.Controllers
                 issuer: issuer,
                 audience: audience,
                 claims: authClaims,
+                notBefore: DateTime.UtcNow,
                 expires: expiration,
                 signingCredentials: signingKey
             );
