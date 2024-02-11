@@ -1,0 +1,51 @@
+package main
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"os"
+
+	"github.com/jackc/pgx/v5"
+)
+
+// https://github.com/jackc/pgx
+func main() {
+	// "postgres://username:password@localhost:5432/database_name"
+	dbUrl := os.Getenv("DATABASE_URL")
+	conn, err := pgx.Connect(context.Background(), dbUrl)
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1)
+	}
+	defer conn.Close(context.Background())
+
+	var reservation Reservation
+	err = conn.QueryRow(context.Background(), "select \"PetId\", \"RoomType\" from \"Reservations\" where \"Id\"=1").Scan(&reservation.PetId, &reservation.RoomType)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+		os.Exit(1)
+	}
+
+	str, _ := json.Marshal(reservation)
+	fmt.Println(string(str))
+}
+
+
+
+type Reservation struct {
+	Id                  int       `json:"id"`
+	RoomType            RoomType  `json:"roomType"`
+	ExpectedCheckInTime time.Time `json:"expectedCheckInTime"`
+	CheckInTime         time.Time `json:"checkInTime"`
+	CheckOutTime        time.Time `json:"checkOutTime"`
+	PetId               int       `json:"PetId"`
+}
+
+type RoomType string
+
+const (
+	Standard RoomType = "0"
+	Deluxe   RoomType = "1"
+)
