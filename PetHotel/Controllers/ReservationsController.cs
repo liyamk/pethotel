@@ -74,7 +74,7 @@ namespace PetHotel.Controllers
             }
 
             Reservation reservation = _mapper.Map<Reservation>(reservationDto);
-            await _reservationRepo.CreateAsync(reservation); // create reservation
+            await _reservationRepo.CreateAsync(reservation);
 
             return Ok(reservation.Id);
         }
@@ -166,6 +166,7 @@ namespace PetHotel.Controllers
             }
 
             await _reservationRepo.DeleteAsync(reservation);
+            // send cancellation 
             return StatusCode(StatusCodes.Status204NoContent);
         }
     }
