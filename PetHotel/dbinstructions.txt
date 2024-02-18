@@ -2,6 +2,7 @@
 powershell
 docker run --name ts-postgres -e POSTGRES_PASSWORD=postgrespassword -e POSTGRES_DB=hotel -e POSTGRES_USER=postgres -d -p 5432:5432 postgres:16.1
 
+# https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/?tabs=vs
 package manager console: 
 Add-Migration InitialCreate    #  reverse is Remove-Migration.
 Update-Database
