@@ -27,7 +27,7 @@ namespace PetHotel.Controllers
             return Ok(_mapper.Map<List<OwnerDto>>(owners));
         }
 
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<ActionResult<Owner>> GetAsync(int id)
         {
             if (id == 0)
@@ -46,26 +46,27 @@ namespace PetHotel.Controllers
 
         [HttpPost]
         [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
-        public async Task<ActionResult<int>> CreateAsync([FromBody] Owner owner)
+        public async Task<ActionResult<int>> CreateAsync([FromBody] OwnerCreateDto ownerDto)
         {
-            if (owner == null)
+            if (ownerDto == null)
             {
-                return BadRequest(owner);
+                return BadRequest(ownerDto);
             }
 
+            var owner = _mapper.Map<Owner>(ownerDto);
             await _ownerRepo.CreateAsync(owner);
             return Ok(owner);
         }
 
         // TODO: implement 
-        [HttpPost]
+        [HttpPut("{id}")]
         [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
         public ActionResult PutAsync(int id, [FromBody] Owner owner)
         {
             throw new NotImplementedException();
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
         public async Task<ActionResult> DeleteAsync(int id)
         {

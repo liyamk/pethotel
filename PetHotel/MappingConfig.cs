@@ -21,6 +21,7 @@ namespace PetHotel
 
             CreateMap<User, UserDto>();   
             CreateMap<Owner, OwnerDto>();
+            CreateMap<Owner, OwnerCreateDto>().ReverseMap();
         }
     }
 }

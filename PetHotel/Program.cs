@@ -55,6 +55,7 @@ builder.Services.AddScoped<IRepository<Reservation>, Repository<Reservation>>();
 builder.Services.AddScoped<IRepository<User>, Repository<User>>();
 builder.Services.AddScoped<IRepository<Owner>, Repository<Owner>>();
 builder.Services.AddScoped<IReservationEventSender, ReservationEventSender>();
+builder.Services.AddHttpClient();
 
 var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]);
 builder.Services.AddAuthentication(c => {

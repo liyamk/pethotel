@@ -5,3 +5,15 @@ docker run --name ts-postgres -e POSTGRES_PASSWORD=postgrespassword -e POSTGRES_
 package manager console: 
 Add-Migration InitialCreate    #  reverse is Remove-Migration.
 Update-Database
+
+# to add new column to existing table
+Add-Migration Add<TableName><ColumnName>
+e.g.  Add-Migration AddPetOwnerId
+then 
+Update-Database
+
+# to add new Table to database
+Add-Migration Add<TableName>
+e.g.  Add-Migration AddOwner
+then 
+Update-Database
