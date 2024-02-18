@@ -17,6 +17,9 @@ namespace PetHotel.Models
         public PetType Type { get; set; }
 
         public bool CheckedIn { get; set; }
+
+        [Required]
+        public int OwnerId { get; set; }
     }
 
 
