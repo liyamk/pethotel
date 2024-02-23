@@ -28,7 +28,13 @@ func environmentValidation() {
 		os.Exit(1)
 	}
 
+	emailAuth := os.Getenv("EMAIL_AUTH_PASSWORD")
+	if emailAuth == "" {
+		fmt.Errorf("Expecting email auth password environment var")
+	}
+
 }
+
 func postNotification(c *gin.Context) {
 	var event NotificationEvent
 
@@ -36,19 +42,15 @@ func postNotification(c *gin.Context) {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Expecting notification event in body."})
 		return
 	}
-	// TODO: add validation
-	// Type could only be sms or email
-	// email and phone number validations
 
-	if event.Type == "email" {
-		sendEmail()
-	} else {
-		errSend := sendSms(event)
-		if errSend != nil {
-			fmt.Errorf(errSend.Error())
-			c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Error encountered sending message"})
-		}
+	if event.Message == "" || (event.Type != "Email" && event.Type != "Sms") {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Invalid request, message empty or type not set to either 'Email' or 'Sms'"})
+		return
 	}
 
-	c.IndentedJSON(http.StatusCreated, event)
+	if event.Type == "email" {
+		sendEmail(event, c)
+	} else {
+		sendSms(event, c)
+	}
 }
