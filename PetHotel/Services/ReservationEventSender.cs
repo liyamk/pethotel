@@ -19,27 +19,36 @@ namespace PetHotel.Services
             _clientFactory = factory;
             _config = config; 
         }
-        public Task SendCanceledEvent(Reservation reservation)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task SendCheckedInEvent(Reservation reservation)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task SendCheckedOutEvent(Reservation reservation)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task SendCreatedEvent(Reservation reservation)
+        public async Task SendCanceledEventAsync(Reservation reservation)
         {
             var pet = await GetPetAsync(reservation.PetId);
             var owner = await GetOwnerAsync(pet.OwnerId);
-            var message = $"{pet.Name} is all checked in!";
-            await SendEventAsync(owner, NotificationType.Email, message);
+            var message = $"Hi {owner.FirstName}, your reservation for {pet.Name} has been cancelled per your request.";
+            await SendEventAsync(owner, NotificationType.Sms, message);
+        }
+
+        public async Task SendCheckedInEventAsync(Reservation reservation)
+        {
+            var pet = await GetPetAsync(reservation.PetId);
+            var owner = await GetOwnerAsync(pet.OwnerId);
+            var message = $"{pet.Name} is checked in and ready to enjoy their stay.";
+            await SendEventAsync(owner, NotificationType.Sms, message);
+        }
+
+        public async Task SendCheckedOutEventAsync(Reservation reservation)
+        {
+            var pet = await GetPetAsync(reservation.PetId);
+            var owner = await GetOwnerAsync(pet.OwnerId);
+            var message = $"{pet.Name} is fully checked out. We hope to see you again soon, {owner.FirstName}!";
+            await SendEventAsync(owner, NotificationType.Sms, message);
+        }
+
+        public async Task SendCreatedEventAsync(Reservation reservation)
+        {
+            var pet = await GetPetAsync(reservation.PetId);
+            var owner = await GetOwnerAsync(pet.OwnerId);
+            var message = $"Hi {owner.FirstName}, your reservation for {pet.Name} has been created.";
+            await SendEventAsync(owner, NotificationType.Sms, message);
         }
 
         private async Task<Pet> GetPetAsync(int petId)

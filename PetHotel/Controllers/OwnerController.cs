@@ -46,7 +46,7 @@ namespace PetHotel.Controllers
 
         [HttpPost]
         [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
-        public async Task<ActionResult<int>> CreateAsync([FromBody] OwnerCreateDto ownerDto)
+        public async Task<ActionResult<Owner>> CreateAsync([FromBody] OwnerCreateDto ownerDto)
         {
             if (ownerDto == null)
             {

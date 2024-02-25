@@ -11,8 +11,8 @@ namespace PetHotel
     {
         public MappingConfig()
         {
-            CreateMap<PetDTO, Pet>().ReverseMap();
-            CreateMap<Pet, PetDTO>();
+            CreateMap<PetDto, Pet>().ReverseMap();
+            CreateMap<Pet, PetDto>();
             CreateMap<Pet, PetCreateDto>().ReverseMap();
 
             CreateMap<Reservation, ReservationCreateDto>().ReverseMap();

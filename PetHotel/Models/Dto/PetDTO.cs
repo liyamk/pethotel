@@ -2,7 +2,7 @@
 
 namespace PetHotel.Models.Dto
 {
-    public class PetDTO : BasePet
+    public class PetDto : BasePet
     {
         public int Id { get; set; }
     }
@@ -15,6 +15,8 @@ namespace PetHotel.Models.Dto
         [Required]
         public PetType Type { get; set; }
 
+        [Required]
+        public int OwnerId { get; set; } 
     }
 
     public class PetUpdateDto : BasePet
@@ -28,5 +30,7 @@ namespace PetHotel.Models.Dto
         public PetType Type { get; set; }
 
         public bool CheckedIn { get; set; }
+
+        public int OwnerId { get; set; }
     }
 }

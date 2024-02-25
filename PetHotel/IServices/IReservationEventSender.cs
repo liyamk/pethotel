@@ -4,12 +4,12 @@ namespace PetHotel.IServices
 {
     public interface IReservationEventSender
     {
-        Task SendCreatedEvent(Reservation reservation);
+        Task SendCreatedEventAsync(Reservation reservation);
 
-        Task SendCheckedInEvent(Reservation reservation);
+        Task SendCheckedInEventAsync(Reservation reservation);
 
-        Task SendCheckedOutEvent(Reservation reservation);
+        Task SendCheckedOutEventAsync(Reservation reservation);
 
-        Task SendCanceledEvent(Reservation reservation);
+        Task SendCanceledEventAsync(Reservation reservation);
     }
 }
