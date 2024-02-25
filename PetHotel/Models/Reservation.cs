@@ -22,8 +22,6 @@ namespace PetHotel.Models
 
         // [ForeignKey("Pet")]
         public int PetId { get; set; } // foreign key to tie Pet and Reservation table
-
-        public Pet? Pet { get; set; } // pet from relation
     }
 
     [JsonConverter(typeof(JsonStringEnumConverter))]

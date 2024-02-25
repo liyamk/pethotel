@@ -15,13 +15,15 @@ namespace PetHotel.Controllers
         private readonly IRepository<Reservation> _reservationRepo;
         private readonly IMapper _mapper;
         private readonly IRepository<Pet> _petRepo;
+        private readonly IReservationEventSender _eventSender;
 
         // TODO: 
-        public ReservationsController(IRepository<Reservation> reservationRepo, IMapper mapper, IRepository<Pet> petRepo)
+        public ReservationsController(IRepository<Reservation> reservationRepo, IMapper mapper, IRepository<Pet> petRepo, IReservationEventSender eventSender)
         {
             _reservationRepo = reservationRepo;
             _mapper = mapper;
             _petRepo = petRepo;
+            _eventSender = eventSender;
         }
 
         // GET: api/<ReservationsController>
@@ -58,9 +60,10 @@ namespace PetHotel.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
-        public async Task<ActionResult<int>> CreateAsync([FromBody] ReservationCreateDto reservationDto)
+        public async Task<ActionResult<Reservation>> CreateAsync([FromBody] ReservationCreateDto reservationDto)
         {
             if (reservationDto == null)
             {
@@ -73,16 +76,25 @@ namespace PetHotel.Controllers
                 return BadRequest(reservationDto.PetId);
             }
 
+            // prevent multiple reservations for same pet
+            var reservations = await _reservationRepo.GetAllAsync(x => x.PetId == pet.Id && x.CheckOutTime == null);
+            if (reservations != null)
+            {
+                return Conflict(reservationDto);
+            }
+
             Reservation reservation = _mapper.Map<Reservation>(reservationDto);
             await _reservationRepo.CreateAsync(reservation);
+            await _eventSender.SendCreatedEventAsync(reservation);
 
-            return Ok(reservation.Id);
+            return Ok(reservation);
         }
 
         // POST api/<ReservationsController>/CheckIn/<ID>
         [HttpPost("CheckIn/{id}")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
         public async Task<ActionResult> CheckInAsync(int id)
@@ -100,17 +112,17 @@ namespace PetHotel.Controllers
             }
 
             var pet = await _petRepo.GetAsync(x => x.Id == reservation.PetId);
-            if (pet == null)
+            if (pet == null || pet.CheckedIn)
             {
-                return BadRequest(reservation.PetId);
+                return Conflict(reservation);
             } 
 
             reservation.CheckInTime = DateTime.UtcNow;
             pet.CheckedIn = true;
-           // reservation.Pet = pet;
 
             await _reservationRepo.UpdateAsync(reservation); // create reservation
             await _petRepo.UpdateAsync(pet); // update Pet as checked in
+            await _eventSender.SendCheckedInEventAsync(reservation);
             return Ok(StatusCode(StatusCodes.Status201Created));
         }
 
@@ -136,13 +148,15 @@ namespace PetHotel.Controllers
             reservation.CheckOutTime = DateTime.UtcNow;
             await _reservationRepo.UpdateAsync(reservation);
 
-            var pet = reservation.Pet;
+            var pet = await _petRepo.GetAsync(x => x.Id == reservation.PetId);
             if (pet != null)
             {
                 pet.CheckedIn = false;
                 await _petRepo.UpdateAsync(pet); // update pet as checked out
             }
 
+            // TODO: implement reservation cleanup
+            //  await _reservationRepo.DeleteAsync(reservation); // delete reservation when checking out
             return Ok("Check-out successful");
         }
 

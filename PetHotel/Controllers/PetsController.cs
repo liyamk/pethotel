@@ -13,21 +13,23 @@ namespace PetHotel.Controllers
     public class PetsController : ControllerBase
     {
         private readonly IRepository<Pet> _petRepo;
+        private readonly IRepository<Owner> _ownerRepo;
         private readonly IMapper _mapper;
 
-        public PetsController(IRepository<Pet> petRepo, IMapper mapper)
+        public PetsController(IRepository<Pet> petRepo, IRepository<Owner> ownerRepo, IMapper mapper)
         {
             _petRepo = petRepo;
+            _ownerRepo = ownerRepo;
             _mapper = mapper;
         }
 
         // GET: api/<PetsController>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<PetDTO>>> GetAsync()
+        public async Task<ActionResult<IEnumerable<PetDto>>> GetAsync()
         {
             IEnumerable<Pet> pets = await _petRepo.GetAllAsync();
-            return Ok(_mapper.Map<List<PetDTO>>(pets));
+            return Ok(_mapper.Map<List<PetDto>>(pets));
         }
 
         // GET api/<PetsController>/5
@@ -35,7 +37,7 @@ namespace PetHotel.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<PetDTO>> GetAsync(int id)
+        public async Task<ActionResult<PetDto>> GetAsync(int id)
         {
             if (id == 0)
             {
@@ -48,31 +50,45 @@ namespace PetHotel.Controllers
                 return NotFound();
             }
 
-            return Ok(_mapper.Map<PetDTO>(pet));
+            return Ok(_mapper.Map<PetDto>(pet));
         }
 
         // POST api/<PetsController>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
-        public async Task<ActionResult<int>> CreateAsync([FromBody] PetCreateDto petDTO)
+        public async Task<ActionResult<Pet>> CreateAsync([FromBody] PetCreateDto petDto)
         {
-            if (petDTO == null)
+            if (petDto == null)
             {
-                return BadRequest(petDTO);
+                return BadRequest(petDto);
             }
 
-            Pet pet = _mapper.Map<Pet>(petDTO);
+            var owner = await _ownerRepo.GetAsync(x => x.Id == petDto.OwnerId);
+            if (owner == null)
+            {
+                return BadRequest(petDto);
+            }
+
+            // an owner can't have two pets with same name and type
+            var matched = owner.Pets.Where(x => x.Name == petDto.Name && x.Type == petDto.Type).FirstOrDefault();
+            if (matched != null) 
+            {
+                return Conflict(petDto);
+            }
+
+            Pet pet = _mapper.Map<Pet>(petDto);
             await _petRepo.CreateAsync(pet);
-            return Ok(pet.Id);
+            return Ok(pet);
         }
 
         // PUT api/<PetsController>/5
         [HttpPut("{id}")]
         [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
-        public async Task<ActionResult> PutAsync(int id, [FromBody] PetDTO updateDto)
+        public async Task<ActionResult> PutAsync(int id, [FromBody] PetDto updateDto)
         {
             if (id == 0 && id != updateDto.Id)
             {
