@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"regexp"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/twilio/twilio-go"
@@ -14,6 +16,14 @@ import (
 func sendSms(event NotificationEvent, c *gin.Context) {
 	// Find your Account SID and Auth Token at twilio.com/console
 	// and set the environment variables. See http://twil.io/secure
+	phoneNumber := strings.ReplaceAll(event.PhoneNumber, " ", "")
+	phoneNumber = strings.ReplaceAll(phoneNumber, "-", "")
+	isValid := isValidNumber(phoneNumber)
+	if !isValid {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Invalid phone number " + event.PhoneNumber})
+		return
+	}
+
 	client := twilio.NewRestClient()
 
 	params := &api.CreateMessageParams{}
@@ -40,4 +50,15 @@ func sendSms(event NotificationEvent, c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Error encountered sending message"})
+}
+
+func isValidNumber(phoneNumber string) bool {
+	if phoneNumber == "" {
+		return false
+	}
+
+	usNumberRegex := `^\+1\d{10}$` // matches us 10 digit number with +1
+	re := regexp.MustCompile(usNumberRegex)
+
+	return re.Find([]byte(phoneNumber)) != nil
 }

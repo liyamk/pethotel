@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -43,12 +44,12 @@ func postNotification(c *gin.Context) {
 		return
 	}
 
-	if event.Message == "" || (event.Type != "Email" && event.Type != "Sms") {
+	if event.Message == "" || (strings.ToLower(event.Type) != "email" && strings.ToLower(event.Type) != "sms") {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Invalid request, message empty or type not set to either 'Email' or 'Sms'"})
 		return
 	}
 
-	if event.Type == "email" {
+	if strings.ToLower(event.Type) == "email" {
 		sendEmail(event, c)
 	} else {
 		sendSms(event, c)
