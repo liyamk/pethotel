@@ -11,14 +11,14 @@ import (
 )
 
 func sendEmail(event NotificationEvent, c *gin.Context) {
-	if event.EmailAddresss == "" {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Invalid email address"})
+	if event.EmailAddress == "" {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Invalid email address, empty email address"})
 		return
 	}
 
-	_, err := mail.ParseAddress(event.EmailAddresss)
+	_, err := mail.ParseAddress(event.EmailAddress)
 	if err != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Invalid email address"})
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Invalid email address " + err.Error()})
 		return
 	}
 
@@ -28,7 +28,7 @@ func sendEmail(event NotificationEvent, c *gin.Context) {
 	}
 
 	to := []string{
-		event.EmailAddresss,
+		event.EmailAddress,
 	}
 
 	smtpHost := "smtp.gmail.com"
