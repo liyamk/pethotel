@@ -36,6 +36,8 @@ namespace PetHotel.Controllers
             if (user != null)
             {
                 var token = CreateJwtToken(user);
+                user.LastLoginDate = DateTime.UtcNow;
+                await _userRepo.UpdateAsync(user);
                 return Ok(token);
             }
 
