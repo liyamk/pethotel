@@ -81,6 +81,7 @@ namespace PetHotel.Controllers
             }
 
             Pet pet = _mapper.Map<Pet>(petDto);
+            pet.CreatedDate = pet.ModifiedDate = DateTime.UtcNow;
             await _petRepo.CreateAsync(pet);
             return Ok(pet);
         }
@@ -101,6 +102,7 @@ namespace PetHotel.Controllers
                 return NotFound();
             }
 
+            pet.ModifiedDate = DateTime.UtcNow;
             await _petRepo.UpdateAsync(_mapper.Map<Pet>(updateDto));
 
             return Ok(StatusCode(StatusCodes.Status204NoContent));

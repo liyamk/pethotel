@@ -20,6 +20,10 @@ namespace PetHotel.Models
 
         [Required]
         public int OwnerId { get; set; }
+
+        public DateTime CreatedDate { get; set; }
+
+        public DateTime ModifiedDate { get; set; }
     }
 
 

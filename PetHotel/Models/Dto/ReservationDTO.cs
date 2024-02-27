@@ -23,8 +23,6 @@ namespace PetHotel.Models.Dto
     public class ReservationDto : BaseReservation
     {
         public int Id { get; set; }
-
-        public Pet? Pet { get; set; }
     }
 
     public class BaseReservation

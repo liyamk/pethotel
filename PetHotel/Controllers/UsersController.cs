@@ -43,6 +43,7 @@ namespace PetHotel.Controllers
                 return new ConflictObjectResult("Existing user");
             }
 
+            user.CreatedDate = user.ModifiedDate = DateTime.UtcNow;
             await _userRepo.CreateAsync(user);
             return Ok();
         }

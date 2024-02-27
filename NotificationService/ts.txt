@@ -1,0 +1,25 @@
+docker start ts-postgres
+
+$loginBody = @"
+{
+  "userName": "admin123",
+  "password": "admirals"
+}
+"@
+
+$tokenRes = Invoke-RestMethod -Method Post -Uri 'https://localhost:7207/api/Login' -ContentType application/json -Body $loginBody
+$token = "Bearer $($tokenRes.token)"
+$header = @{Authorization = $token}
+
+# add owner
+$ownerBody = @"
+{
+  "firstName": "liya",
+  "lastName": "k",
+  "emailAddress": "liyak@example.com",
+  "phoneNumber": "+12403553044"
+}
+"@
+
+$ownerRes = Invoke-RestMethod -Method Post -Uri 'https://localhost:7207/api/Owner' -ContentType application/json -Body $ownerBody -Headers $header
+$id = $ownerRes.id
