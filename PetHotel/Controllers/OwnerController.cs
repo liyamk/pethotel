@@ -54,6 +54,7 @@ namespace PetHotel.Controllers
             }
 
             var owner = _mapper.Map<Owner>(ownerDto);
+            owner.CreatedDate = owner.ModifiedDate = DateTime.UtcNow;
             await _ownerRepo.CreateAsync(owner);
             return Ok(owner);
         }

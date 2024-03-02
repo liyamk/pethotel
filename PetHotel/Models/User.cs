@@ -18,7 +18,16 @@ namespace PetHotel.Models
         public string Password { get; set; }
 
         [Required]
+        public string Salt { get; set; }
+
+        [Required]
         public Role Role { get; set; }
+
+        public DateTime CreatedDate { get; set; }
+
+        public DateTime ModifiedDate { get; set; }
+
+        public DateTime LastLoginDate { get; set; }
     }
 
     [JsonConverter(typeof(JsonStringEnumConverter))]

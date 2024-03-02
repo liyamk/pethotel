@@ -22,6 +22,11 @@ namespace PetHotel.Models
 
         // [ForeignKey("Pet")]
         public int PetId { get; set; } // foreign key to tie Pet and Reservation table
+
+        public DateTime CreatedDate { get; set; }
+
+        public DateTime ModifiedDate { get; set; }
+
     }
 
     [JsonConverter(typeof(JsonStringEnumConverter))]

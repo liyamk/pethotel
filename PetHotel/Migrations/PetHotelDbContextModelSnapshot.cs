@@ -30,6 +30,9 @@ namespace PetHotel.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("EmailAddress")
                         .IsRequired()
                         .HasColumnType("text");
@@ -41,6 +44,9 @@ namespace PetHotel.Migrations
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
@@ -61,6 +67,12 @@ namespace PetHotel.Migrations
 
                     b.Property<bool>("CheckedIn")
                         .HasColumnType("boolean");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -93,7 +105,13 @@ namespace PetHotel.Migrations
                     b.Property<DateTime?>("CheckOutTime")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTime>("ExpectedCheckInTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("PetId")
@@ -104,8 +122,6 @@ namespace PetHotel.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PetId");
-
                     b.ToTable("Reservations");
                 });
 
@@ -114,9 +130,18 @@ namespace PetHotel.Migrations
                     b.Property<string>("UserName")
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("LastLoginDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -124,6 +149,10 @@ namespace PetHotel.Migrations
 
                     b.Property<int>("Role")
                         .HasColumnType("integer");
+
+                    b.Property<string>("Salt")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("UserName");
 
@@ -137,17 +166,6 @@ namespace PetHotel.Migrations
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("PetHotel.Models.Reservation", b =>
-                {
-                    b.HasOne("PetHotel.Models.Pet", "Pet")
-                        .WithMany()
-                        .HasForeignKey("PetId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Pet");
                 });
 
             modelBuilder.Entity("PetHotel.Models.Owner", b =>

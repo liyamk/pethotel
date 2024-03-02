@@ -14,10 +14,12 @@ namespace PetHotel.Controllers
     {
         private readonly IRepository<User> _userRepo;
         private readonly IMapper _mapper;
-        public UsersController(IRepository<User> userRepo, IMapper mapper)
+        private readonly IHashService _hashService;
+        public UsersController(IRepository<User> userRepo, IMapper mapper, IHashService hashService)
         {
             _userRepo = userRepo;
             _mapper = mapper;
+            _hashService = hashService;
         }
 
         [HttpGet]
@@ -30,21 +32,28 @@ namespace PetHotel.Controllers
 
         [HttpPost]
         [Authorize(Roles = nameof(Role.Admin))]
-        public async Task<ActionResult> CreateUserAsync([FromBody] User user)
+        public async Task<ActionResult<UserDto>> CreateUserAsync([FromBody] UserCreateDto userCreate)
         {
-            if (user == null)
+            if (userCreate == null)
             {
                 return BadRequest();
             }
 
-            var existing = await _userRepo.GetAsync(x => x.UserName == user.UserName);
+            var existing = await _userRepo.GetAsync(x => x.UserName == userCreate.UserName);
             if (existing != null) 
             {
                 return new ConflictObjectResult("Existing user");
             }
 
+            var user = _mapper.Map<User>(userCreate);
+
+            var passHash = _hashService.GetHashedValue(userCreate.Password, out string salt);
+            user.Password = passHash;
+            user.Salt = salt;
+            user.CreatedDate = user.ModifiedDate = DateTime.UtcNow;
+
             await _userRepo.CreateAsync(user);
-            return Ok();
+            return Ok(_mapper.Map<UserDto>(user));
         }
     }
 }

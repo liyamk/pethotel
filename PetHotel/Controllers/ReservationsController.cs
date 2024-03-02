@@ -84,6 +84,7 @@ namespace PetHotel.Controllers
             }
 
             Reservation reservation = _mapper.Map<Reservation>(reservationDto);
+            reservation.CreatedDate = reservation.ModifiedDate = DateTime.UtcNow;
             await _reservationRepo.CreateAsync(reservation);
             await _eventSender.SendCreatedEventAsync(reservation);
 
@@ -117,7 +118,7 @@ namespace PetHotel.Controllers
                 return Conflict(reservation);
             } 
 
-            reservation.CheckInTime = DateTime.UtcNow;
+            reservation.CheckInTime = reservation.ModifiedDate =  DateTime.UtcNow;
             pet.CheckedIn = true;
 
             await _reservationRepo.UpdateAsync(reservation); // create reservation
@@ -145,7 +146,7 @@ namespace PetHotel.Controllers
                 return NotFound();
             }
    
-            reservation.CheckOutTime = DateTime.UtcNow;
+            reservation.CheckOutTime = reservation.ModifiedDate = DateTime.UtcNow;
             await _reservationRepo.UpdateAsync(reservation);
 
             var pet = await _petRepo.GetAsync(x => x.Id == reservation.PetId);
