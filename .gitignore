@@ -47,3 +47,6 @@ msbuild.wrn
 
 # Go
 *.exe
+
+# Data Migration
+**/Migrations/

@@ -19,7 +19,9 @@ namespace PetHotel
             CreateMap<Reservation, ReservationDto>();
             CreateMap<Reservation, ReservationUpdateDto>().ReverseMap();
 
-            CreateMap<User, UserDto>();   
+            CreateMap<User, UserDto>().ReverseMap();   
+            CreateMap<User, UserCreateDto>().ReverseMap();
+
             CreateMap<Owner, OwnerDto>();
             CreateMap<Owner, OwnerCreateDto>().ReverseMap();
         }

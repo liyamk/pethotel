@@ -17,11 +17,13 @@ namespace PetHotel.Controllers
     {
         private readonly IRepository<User> _userRepo;
         private readonly IConfiguration _config;
+        private readonly IHashService _hashService;
         private readonly int expirationMinutes = 60;
-        public LoginController(IRepository<User> userRepo, IConfiguration config)
+        public LoginController(IRepository<User> userRepo, IConfiguration config, IHashService hashService)
         {
             _userRepo = userRepo;
             _config = config;
+            _hashService = hashService;
         }
 
         [HttpPost]
@@ -86,7 +88,8 @@ namespace PetHotel.Controllers
             var user = await _userRepo.GetAsync(x => x.UserName == loginUser.UserName);
             if (user != null)
             {
-                if (user.Password == loginUser.Password)
+                var isVerified = _hashService.VerifyPassword(loginUser.Password, user.Password, user.Salt);
+                if (isVerified)
                 {
                     return user;
                 }

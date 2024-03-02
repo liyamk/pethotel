@@ -18,6 +18,9 @@ namespace PetHotel.Models
         public string Password { get; set; }
 
         [Required]
+        public string Salt { get; set; }
+
+        [Required]
         public Role Role { get; set; }
 
         public DateTime CreatedDate { get; set; }
